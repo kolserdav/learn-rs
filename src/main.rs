@@ -11,9 +11,10 @@ extern crate urlencoded;
 use std::ffi::OsStr;
 use std::ffi::OsString;
 use std::fs;
-use std::path::Path;
 use urlencoded::UrlEncodedBody;
 use users::get_current_username;
+use std::path::Path;
+use std::io::Read;
 
 const ADDRRESS: &str = "localhost:3020";
 
@@ -120,27 +121,27 @@ fn get_form(_request: &mut Request) -> IronResult<Response> {
 fn get_image(_request: &mut Request) -> IronResult<Response> {
     let mut response = Response::new();
     response.set_mut(status::Ok);
-    response.set_mut(mime!(Image/Png; Charset=Utf8));
-    let file_path = get_image_path();
-    let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
-    response.set_mut(contents);
+    response.set_mut(mime!(Image/Png));
+    let str_t = get_image_path();
+    let file_path = Path::new(OsStr::new(&str_t));
+    println!("{:?}", file_path);
+    // let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    let mut file_content = Vec::new();
+    let mut file = fs::File::open(&file_path).expect("Unable to open file");
+    file.read_to_end(&mut file_content).expect("Unable to read");
+    response.set_mut(file_content);
     Ok(response)
 }
 
-fn merge_path(user: OsString) -> &'static String {
-    let str_f = format!("/home/{:?}/1png.png", user);
-    &str_f
-}
-
-fn get_image_path() -> &'static Path {
+fn get_image_path() -> String {
     let user;
     match get_current_username() {
         Some(uname) => user = uname,
         None => user = OsString::from(""),
     };
-    let image_path = Path::new(OsStr::new(merge_path(user)));
-    println!("image_path {:?}", image_path);
-    image_path
+    let str_t = format!("/home/{:?}/1png.png", user);
+    // println!("{:?}",  str_t.replace("\"",""));
+    str_t.replace("\"", "")
 }
 
 fn web_server() {
