@@ -1,5 +1,4 @@
 use std::ffi::OsString;
-use users::get_current_username;
 
 const IMAGE_NAME: &str = "mandel1.png";
 
@@ -16,19 +15,13 @@ pub fn gcd(mut n: u64, mut m: u64) -> u64 {
     n
 }
 
-
 pub fn get_image_path() -> String {
-    /*
-    let user;
-    match get_current_username() {
-        Some(uname) => user = uname,
-        None => user = OsString::from(""),
-    };
-    */
-    let str_t = format!("/usr/local/share/applications/first-rs/images/{}", IMAGE_NAME);
+    let str_t = format!(
+        "/usr/local/share/applications/first-rs/images/{}",
+        IMAGE_NAME
+    );
     str_t.replace("\"", "")
 }
-
 
 /*
 fn parse_from_args() {
