@@ -1,11 +1,13 @@
 version: '3.8'
 services:
-  server:
+  rust:
     build: 
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: dockerfiles/rust/Dockerfile
+    container_name: rust
     restart: always
-    ports:
-      - "2222:22"
     volumes:
-      - ./:/usr/src/app
+      - ./:/usr/src/learn-rs
+      - ./rusup:/root/.rustup
+
+    
